@@ -21,5 +21,21 @@ namespace ChangeMaking {
             
             this.Denominations = denominations;
         }
+
+        public int CoinsCount( int amount ) {
+            int numCoins = 0;
+            int remainingAmount = amount;
+
+            IList<int> sortedDenominations = Denominations.OrderByDescending(d => d).ToList();
+
+            foreach(int coin in sortedDenominations) {
+                while (remainingAmount >= coin) {
+                    remainingAmount -= coin;
+                    numCoins += 1;
+                }
+            }
+
+            return numCoins;
+        }
     }
 }
