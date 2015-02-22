@@ -22,20 +22,24 @@ namespace ChangeMaking {
             this.Denominations = denominations;
         }
 
-        public int CoinsCount( int amount ) {
-            int numCoins = 0;
+        public IList<int> GetChange( int amount ) {
+            IList<int> change = new List<int>();
             int remainingAmount = amount;
 
-            IList<int> sortedDenominations = Denominations.OrderByDescending(d => d).ToList();
+            IList<int> sortedDenominations = Denominations.OrderByDescending( d => d ).ToList();
 
-            foreach(int coin in sortedDenominations) {
-                while (remainingAmount >= coin) {
+            foreach( int coin in sortedDenominations ) {
+                while( remainingAmount >= coin ) {
                     remainingAmount -= coin;
-                    numCoins += 1;
+                    change.Add(coin);
                 }
             }
 
-            return numCoins;
+            return change;
+        }
+
+        public int CoinsCount( int amount ) {
+            return GetChange( amount ).Count;
         }
     }
 }

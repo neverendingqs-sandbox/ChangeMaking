@@ -115,5 +115,51 @@ namespace ChangeMakingTests {
                 numCoins
             );
         }
+
+        [TestCase( new int[] { 1, 3, 5 }, 1, new int[] { 1 } )]
+        [TestCase( new int[] { 1, 3, 5 }, 3, new int[] { 3 } )]
+        [TestCase( new int[] { 1, 3, 5 }, 5, new int[] { 5 } )]
+        public void GetChange_AmountEqualToDenomination_ReturnsDenomination( int[] denominationsArray, int amount, int[] change ) {
+            /* Arrange */
+            ISet<int> denominations = new HashSet<int>( denominationsArray );
+            MinimumChange mc = new MinimumChange( denominations );
+
+            IList<int> expectedChange = new List<int>( change );
+
+            /* Act */
+            IList<int> actualChange = mc.GetChange( amount );
+
+            /* Assert */
+            CollectionAssert.AreEqual(
+                expectedChange,
+                actualChange
+            );
+        }
+
+        [TestCase( 4, new int[] { 1, 1, 1, 1 } )]
+        [TestCase( 9, new int[] { 5, 1, 1, 1, 1 } )]
+        [TestCase( 42, new int[] { 25, 10, 5, 1, 1 } )]
+        [TestCase( 50, new int[] { 25, 25 } )]
+        [TestCase( 68, new int[] { 25, 25, 10, 5, 1, 1, 1 } )]
+        [TestCase( 230, new int[] { 200, 25, 5 } )]
+        [TestCase( 250, new int[] { 200, 25, 25 } )]
+        [TestCase( 330, new int[] { 200, 100, 25, 5 } )]
+        [TestCase( 500, new int[] { 200, 200, 100 } )]
+        public void GetChange_CanadianDenominationAndValidAmount_ReturnsCount( int amount, int[] change ) {
+            /* Arrange */
+            ISet<int> denominations = new HashSet<int> { 1, 5, 10, 25, 100, 200 };
+            MinimumChange mc = new MinimumChange( denominations );
+
+            IList<int> expectedChange = new List<int>( change );
+
+            /* Act */
+            IList<int> actualChange = mc.GetChange( amount );
+
+            /* Assert */
+            CollectionAssert.AreEqual(
+                expectedChange,
+                actualChange
+            );
+        }
     }
 }
