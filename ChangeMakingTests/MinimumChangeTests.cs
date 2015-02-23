@@ -46,12 +46,10 @@ namespace ChangeMakingTests {
             Assert.Throws<ArgumentNullException>( () => new MinimumChange( denominations ) );
         }
 
-        [TestCase( new int[] { 2 } )]
-        [TestCase( new int[] { 2, 5, 9 } )]
-        [TestCase( new int[] { 5, 9, 100 } )]
-        public void MinimumChange_NoOneDenomination_ThrowsArgumentException( int[] invalidDenominations ) {
+        [Test]
+        public void MinimumChange_NoOneDenomination_ThrowsArgumentException() {
             /* Arrange */
-            ISet<int> denominations = new HashSet<int>( invalidDenominations );
+            ISet<int> denominations = new HashSet<int> { 2 };
 
             /* Act, Assert */
             Assert.Throws<ArgumentException>( () => new MinimumChange( denominations ) );
@@ -74,10 +72,10 @@ namespace ChangeMakingTests {
             );
         }
 
-        [TestCase( new int[] { 1, 3, 5 }, 1 )]
-        [TestCase( new int[] { 1, 3, 5 }, 3 )]
-        [TestCase( new int[] { 1, 3, 5 }, 5 )]
-        public void CoinsCount_AmountEqualToDenomination_ReturnsOne( int[] denominationsArray, int amount ) {
+        [TestCase( 1, new int[] { 1, 3, 5 } )]
+        [TestCase( 3, new int[] { 1, 3, 5 } )]
+        [TestCase( 5, new int[] { 1, 3, 5 } )]
+        public void CoinsCount_AmountEqualToDenomination_ReturnsOne( int amount, int[] denominationsArray ) {
             /* Arrange */
             ISet<int> denominations = new HashSet<int>( denominationsArray );
             MinimumChange mc = new MinimumChange( denominations );
@@ -116,10 +114,10 @@ namespace ChangeMakingTests {
             );
         }
 
-        [TestCase( new int[] { 1, 3, 5 }, 1, new int[] { 1 } )]
-        [TestCase( new int[] { 1, 3, 5 }, 3, new int[] { 3 } )]
-        [TestCase( new int[] { 1, 3, 5 }, 5, new int[] { 5 } )]
-        public void GetChange_AmountEqualToDenomination_ReturnsDenomination( int[] denominationsArray, int amount, int[] change ) {
+        [TestCase( 1, new int[] { 1, 3, 5 }, new int[] { 1 } )]
+        [TestCase( 3, new int[] { 1, 3, 5 }, new int[] { 3 } )]
+        [TestCase( 5, new int[] { 1, 3, 5 }, new int[] { 5 } )]
+        public void GetChange_AmountEqualToDenomination_ReturnsDenomination( int amount, int[] denominationsArray, int[] change ) {
             /* Arrange */
             ISet<int> denominations = new HashSet<int>( denominationsArray );
             MinimumChange mc = new MinimumChange( denominations );
@@ -130,7 +128,7 @@ namespace ChangeMakingTests {
             IList<int> actualChange = mc.GetChange( amount );
 
             /* Assert */
-            CollectionAssert.AreEqual(
+            CollectionAssert.AreEquivalent(
                 expectedChange,
                 actualChange
             );
@@ -156,7 +154,47 @@ namespace ChangeMakingTests {
             IList<int> actualChange = mc.GetChange( amount );
 
             /* Assert */
-            CollectionAssert.AreEqual(
+            CollectionAssert.AreEquivalent(
+                expectedChange,
+                actualChange
+            );
+        }
+
+        [TestCase( 6, new int[] { 1, 3, 4 }, new int[] { 3, 3 } )]
+        [TestCase( 7, new int[] { 1, 3, 4, 5 }, new int[] { 4, 3 } )]
+        [TestCase( 194, new int[] { 1, 3, 5, 10, 12, 50, 100 }, new int[] { 100, 50, 12, 12, 10, 10 } )]
+        public void GetChange_IrregularDenominationAndValidAmount_ReturnsCount( int amount, int[] customDenominations, int[] change ) {
+            /* Arrange */
+            ISet<int> denominations = new HashSet<int>( customDenominations );
+            MinimumChange mc = new MinimumChange( denominations );
+
+            IList<int> expectedChange = new List<int>( change );
+
+            /* Act */
+            IList<int> actualChange = mc.GetChange( amount );
+
+            /* Assert */
+            CollectionAssert.AreEquivalent(
+                expectedChange,
+                actualChange
+            );
+        }
+
+        [TestCase( 1, new int[] { 1, 3, 4 }, new int[] { 1 } )]
+        [TestCase( 3, new int[] { 1, 3, 4 }, new int[] { 3 } )]
+        [TestCase( 4, new int[] { 1, 3, 4 }, new int[] { 4 } )]
+        public void GetChange_IrregularDenominationAndAmountEqualToDenomination_ReturnsDenomination( int amount, int[] denominationsArray, int[] change ) {
+            /* Arrange */
+            ISet<int> denominations = new HashSet<int>( denominationsArray );
+            MinimumChange mc = new MinimumChange( denominations );
+
+            IList<int> expectedChange = new List<int>( change );
+
+            /* Act */
+            IList<int> actualChange = mc.GetChange( amount );
+
+            /* Assert */
+            CollectionAssert.AreEquivalent(
                 expectedChange,
                 actualChange
             );

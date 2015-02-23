@@ -23,15 +23,36 @@ namespace ChangeMaking {
         }
 
         public IList<int> GetChange( int amount ) {
+            int[] dp = new int[amount + 1];
+
+            for( int subAmount = 1; subAmount <= amount; subAmount++ ) {
+                int minCoins = int.MaxValue;
+                foreach( int coin in Denominations ) {
+                    if( coin > subAmount ) {
+                        continue;
+                    }
+
+                    if( minCoins > dp[subAmount - coin] + 1 ) {
+                        minCoins = dp[subAmount - coin] + 1;
+                    }
+                }
+
+                dp[subAmount] = minCoins;
+            }
+
+            int currAmount = amount;
             IList<int> change = new List<int>();
-            int remainingAmount = amount;
+            while( currAmount > 0 ) {
+                foreach( int coin in Denominations ) {
+                    if( currAmount - coin < 0 ) {
+                        continue;
+                    }
 
-            IList<int> sortedDenominations = Denominations.OrderByDescending( d => d ).ToList();
-
-            foreach( int coin in sortedDenominations ) {
-                while( remainingAmount >= coin ) {
-                    remainingAmount -= coin;
-                    change.Add(coin);
+                    if( dp[currAmount - coin] == dp[currAmount] - 1 ) {
+                        change.Add( coin );
+                        currAmount -= coin;
+                        continue;
+                    }
                 }
             }
 
