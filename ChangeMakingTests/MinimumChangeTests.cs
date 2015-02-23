@@ -201,21 +201,47 @@ namespace ChangeMakingTests {
         }
 
         [Test]
-        public void CacheReuses_AmountDecreases_AlwaysUsesCache() {
+        public void CacheHits_AmountDecreases_AlwaysUsesCache() {
             /* Arrange */
             ISet<int> denominations = new HashSet<int> { 1, 5, 10, 25, 100, 200 };
-            int numCacheHits = 9;
+            int amount = 9;
             MinimumChange mc = new MinimumChange( denominations );
 
             /* Act */
-            mc.GetChange( numCacheHits );     // First request is always a cache miss
-            for( int amount = numCacheHits; amount > 0; amount-- ) {
-                mc.GetChange( amount );
+            mc.GetChange( amount );     // First request is always a cache miss
+            for( int currAmount = amount; currAmount > 0; currAmount-- ) {
+                mc.GetChange( currAmount );
             }
-            
+
             /* Assert */
             Assert.AreEqual(
-                numCacheHits,
+                1,
+                mc.CacheUpdates
+            );
+
+            Assert.AreEqual(
+                amount,
+                mc.CacheHits
+            );
+        }
+
+        [Test]
+        public void CacheAppends_ZeroAmountIncludedInInitialCache() {
+            /* Arrange */
+            ISet<int> denominations = new HashSet<int> { 1, 5, 10, 25, 100, 200 };
+            MinimumChange mc = new MinimumChange( denominations );
+
+            /* Act */
+            mc.GetChange( 0 );
+
+            /* Assert */
+            Assert.AreEqual(
+                0,
+                mc.CacheUpdates
+            );
+
+            Assert.AreEqual(
+                1,
                 mc.CacheHits
             );
         }
@@ -228,14 +254,46 @@ namespace ChangeMakingTests {
             MinimumChange mc = new MinimumChange( denominations );
 
             /* Act */
-            for( int amount = 0; amount < numCacheAppends; amount++ ) {
+            // 0 is already in the cache on initiation
+            for( int amount = 1; amount <= numCacheAppends; amount++ ) {
                 mc.GetChange( amount );
             }
 
             /* Assert */
             Assert.AreEqual(
+                0,
+                mc.CacheHits
+            );
+
+            Assert.AreEqual(
                 numCacheAppends,
                 mc.CacheUpdates
+            );
+        }
+
+        [Test]
+        public void Cache_MethodsUseSameCache() {
+            /* Arrange */
+            ISet<int> denominations = new HashSet<int> { 1, 5, 10, 25, 100, 200 };
+            int amount = 9;
+            MinimumChange mc = new MinimumChange( denominations );
+
+            /* Act */
+            mc.GetChange( amount );     // First request is always a cache miss
+            for( int currAmount = amount; currAmount > 0; currAmount-- ) {
+                mc.GetChange( currAmount );
+                mc.CoinsCount( currAmount );
+            }
+
+            /* Assert */
+            Assert.AreEqual(
+                1,
+                mc.CacheUpdates
+            );
+
+            Assert.AreEqual(
+                amount * 2,
+                mc.CacheHits
             );
         }
     }

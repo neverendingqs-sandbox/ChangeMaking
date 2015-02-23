@@ -8,7 +8,7 @@ namespace ChangeMaking {
 
     public class MinimumChange {
 
-        private IList<int> _dp = new List<int>();
+        private IList<int> _dp = new List<int>{ 0 };
 
         public ISet<int> Denominations { get; set; }
         public int CacheHits { get; set; }
@@ -50,7 +50,8 @@ namespace ChangeMaking {
         }
 
         public int CoinsCount( int amount ) {
-            return GetChange( amount ).Count;
+            UpdateDp( amount );
+            return _dp[amount];
         }
 
         private void UpdateDp( int amount ) {
