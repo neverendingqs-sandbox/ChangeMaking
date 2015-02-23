@@ -199,5 +199,44 @@ namespace ChangeMakingTests {
                 actualChange
             );
         }
+
+        [Test]
+        public void CacheReuses_AmountDecreases_AlwaysUsesCache() {
+            /* Arrange */
+            ISet<int> denominations = new HashSet<int> { 1, 5, 10, 25, 100, 200 };
+            int numCacheHits = 9;
+            MinimumChange mc = new MinimumChange( denominations );
+
+            /* Act */
+            mc.GetChange( numCacheHits );     // First request is always a cache miss
+            for( int amount = numCacheHits; amount > 0; amount-- ) {
+                mc.GetChange( amount );
+            }
+            
+            /* Assert */
+            Assert.AreEqual(
+                numCacheHits,
+                mc.CacheHits
+            );
+        }
+
+        [Test]
+        public void CacheAppends_AmountIncreases_AlwaysAppendsToCache() {
+            /* Arrange */
+            ISet<int> denominations = new HashSet<int> { 1, 5, 10, 25, 100, 200 };
+            int numCacheAppends = 13;
+            MinimumChange mc = new MinimumChange( denominations );
+
+            /* Act */
+            for( int amount = 0; amount < numCacheAppends; amount++ ) {
+                mc.GetChange( amount );
+            }
+
+            /* Assert */
+            Assert.AreEqual(
+                numCacheAppends,
+                mc.CacheUpdates
+            );
+        }
     }
 }
