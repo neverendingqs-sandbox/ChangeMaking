@@ -10,9 +10,9 @@ namespace ChangeMaking {
 
         private IList<int> _dp = new List<int>{ 0 };
 
-        public ISet<int> Denominations { get; set; }
-        public int CacheHits { get; set; }
-        public int CacheUpdates { get; set; }
+        public ISet<int> Denominations { get; private set; }
+        public int CacheHits { get; private set; }
+        public int CacheUpdates { get; private set; }
 
         public MinimumChange( ISet<int> denominations ) {
             if( denominations == null ) {
