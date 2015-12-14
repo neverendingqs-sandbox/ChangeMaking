@@ -1,2 +1,8 @@
 language: csharp
 solution: ChangeMaking.sln
+install:
+  - nuget restore ChangeMaking.sln
+  - nuget install NUnit.Runners -Version 2.6.4 -ExcludeVersion
+script:
+  - xbuild /p:Configuration=Release ChangeMaking.sln
+  - mono ./NUnit.Runners/tools/nunit-console.exe ./ChangeMakingTests/bin/Release/ChangeMakingTests.dll
